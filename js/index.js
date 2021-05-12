@@ -455,7 +455,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 // var controls = new THREE.TrackballControls(camera);
 // CREATE raycaster for mouse interaction
 const raycaster = new THREE.Raycaster();
-
+controls.autoRotate = true; 
 // CREATE vector2 for mouse and mobile x,y coordinates
 const mouse = new THREE.Vector2();
 const touch = new THREE.Vector2();
@@ -560,6 +560,7 @@ camera.position.z = 20;
 controls.minDistance = 12;
 controls.maxDistance = 30;
 controls.enablePan = false;
+controls.enableRotate = true;
 controls.update();
 controls.saveState();
 
@@ -617,8 +618,9 @@ function onWindowClick(event) {
 // Allows for the scene to move and be interacted with
 function animate() {
     requestAnimationFrame( animate );
-    render();
+    
 	controls.update();
+    render();
 };
 
 // Updates camera renderer

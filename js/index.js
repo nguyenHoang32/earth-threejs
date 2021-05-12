@@ -452,7 +452,7 @@ document.body.appendChild(renderer.domElement);
 
 // CREATE controls so that we can interact with the objects/have interactivity
 const controls = new OrbitControls(camera, renderer.domElement);
-
+// var controls = new THREE.TrackballControls(camera);
 // CREATE raycaster for mouse interaction
 const raycaster = new THREE.Raycaster();
 
@@ -597,7 +597,7 @@ function onWindowClick(event) {
     raycaster.setFromCamera(mouse, camera);
 
     let intersects = raycaster.intersectObjects(earthClouds.children);
-
+    console.log(earthClouds.children)
     for (let i = 0; i < intersects.length; i++){
         document.querySelector("#region").innerText = "Region: " + intersects[0].object.userData.region;
         document.getElementById("region").style.color = intersects[0].object.userData.color;
@@ -624,6 +624,7 @@ function animate() {
 // Updates camera renderer
 function render() {
     renderer.render( scene, camera );
+    
 };
 
 // Removes the points of interest freeing up memory and space to have better performance
@@ -639,21 +640,38 @@ function removeChildren(){
 // Create and add coordinates for the globe
 function addCountryCoord(earth, country, language, latitude, longitude, color, region, population, area_sq_mi, gdp_per_capita, climate){
     let pointOfInterest = new THREE.SphereGeometry( 0.3, 32, 32 );
+   
+    const cubeImg = new THREE.ImageUtils.loadTexture("./IMAGES/test.svg");
+
+
+    // load a image resource
+   
+    // 
     let lat = latitude * (Math.PI/180);
     let lon = -longitude * (Math.PI/180);
     const radius = 10;
     const phi = (90-lat)*(Math.PI/180);
     const theta = (lon+180)*(Math.PI/180);
 
-    let material = new THREE.MeshBasicMaterial({
-        color:color
+    // let material = new THREE.MeshBasicMaterial({
+    //     color:color
+    // });
+    let cubeGeometry = new THREE.BoxGeometry( 1, 0.001, 1 );
+    let material = new THREE.MeshPhongMaterial({
+        map: cubeImg, 
+        side:THREE.DoubleSide, 
+        transparent: true, 
+        opacity:1, 
+        shading: THREE.SmoothShading, 
+        shininess: 90, 
+        specular: 0xFFFFFF
     });
-
     let mesh = new THREE.Mesh(
-        pointOfInterest,
+        cubeGeometry,
         material
     );
-
+    
+// material
     mesh.position.set(
         Math.cos(lat) * Math.cos(lon) * radius,
         Math.sin(lat) * radius,

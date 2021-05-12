@@ -462,13 +462,13 @@ const touch = new THREE.Vector2();
 
 // CREATE earth
 // Earthmap is used for the basic texture which has the various continents/countries/etc. on it
-let earthMap = new THREE.TextureLoader().load('../IMAGES/earthmap4k.jpg');
+let earthMap = new THREE.TextureLoader().load('./IMAGES/earthmap4k.jpg');
 
 // EarthBumpMap is used to give the texture some "depth" so it is more appealing on eyes and data visuals
-let earthBumpMap = new THREE.TextureLoader().load('../IMAGES/earthbump4k.jpg');
+let earthBumpMap = new THREE.TextureLoader().load('./IMAGES/earthbump4k.jpg');
 
 // EarthSpecMap gies the earth some shininess to the environment, allowing reflectivity off of the lights
-let earthSpecMap = new THREE.TextureLoader().load('../IMAGES/earthspec4k.jpg');
+let earthSpecMap = new THREE.TextureLoader().load('./IMAGES/earthspec4k.jpg');
 
 // Geometry is what the shape/size of the globe will be
 let earthGeometry = new THREE.SphereGeometry( 10, 32, 32);
@@ -492,7 +492,7 @@ scene.add( earth );
 let earthCloudGeo = new THREE.SphereGeometry(10, 32, 32);
 
 // Add cloud texture
-let earthCloudsTexture = new THREE.TextureLoader().load('../IMAGES/earthhiresclouds4K.jpg');
+let earthCloudsTexture = new THREE.TextureLoader().load('./IMAGES/earthhiresclouds4K.jpg');
 
 // Add cloud material
 let earthMaterialClouds = new THREE.MeshLambertMaterial({
@@ -518,12 +518,12 @@ let lights = [];
 function createSkyBox(scene) {
     const loader = new THREE.CubeTextureLoader();
     const texture = loader.load([
-        '../IMAGES/space_right.png',
-        '../IMAGES/space_left.png',
-        '../IMAGES/space_top.png',
-        '../IMAGES/space_bot.png',
-        '../IMAGES/space_front.png',
-        '../IMAGES/space_back.png'
+        './IMAGES/space_right.png',
+        './IMAGES/space_left.png',
+        './IMAGES/space_top.png',
+        './IMAGES/space_bot.png',
+        './IMAGES/space_front.png',
+        './IMAGES/space_back.png'
     ])
     scene.background = texture;
 };

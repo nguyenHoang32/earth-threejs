@@ -557,7 +557,7 @@ function createLights(scene){
 // Create a moon
 const moonGeometry = new THREE.SphereGeometry(3.5, 50,50);
 const moonMaterial = new THREE.MeshPhongMaterial({
-    map: THREE.ImageUtils.loadTexture("../IMAGES/moon_texture.jpg")
+    map: THREE.ImageUtils.loadTexture("../IMAGES/moon.jpg")
   });
 const moon = new THREE.Mesh(moonGeometry, moonMaterial);
 moon.position.set(35,0,0);

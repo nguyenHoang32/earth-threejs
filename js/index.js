@@ -557,7 +557,7 @@ function createLights(scene){
 // Create a moon
 const moonGeometry = new THREE.SphereGeometry(3.5, 50,50);
 const moonMaterial = new THREE.MeshPhongMaterial({
-    map: THREE.ImageUtils.loadTexture("../IMAGES/moon.jpg")
+    map: THREE.ImageUtils.loadTexture("./IMAGES/moon.jpg")
   });
 const moon = new THREE.Mesh(moonGeometry, moonMaterial);
 moon.position.set(35,0,0);
@@ -570,14 +570,14 @@ var dTheta = 2 * Math.PI / 1000;
 
 const captainInfo = [
 {
-    path: "../IMAGES/captain1.jpg",
+    path: "./IMAGES/captain1.jpg",
     x: 15,
     y:  5,
     z: 5,
     data: 'Image 1'
 },
 {
-    path: "../IMAGES/captain2.jpg",
+    path: "./IMAGES/captain2.jpg",
     x: -15,
     y:  -5,
     z: 5,

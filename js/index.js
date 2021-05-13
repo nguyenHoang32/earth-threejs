@@ -455,7 +455,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 // var controls = new THREE.TrackballControls(camera);
 // CREATE raycaster for mouse interaction
 const raycaster = new THREE.Raycaster();
-controls.autoRotate = true; 
+// controls.autoRotate = true; 
 // CREATE vector2 for mouse and mobile x,y coordinates
 const mouse = new THREE.Vector2();
 const touch = new THREE.Vector2();
@@ -484,7 +484,7 @@ let earthMaterial = new THREE.MeshPhongMaterial({
 
 // Earth is the final product which ends up being rendered on scene, also is used as a grandparent for the points of interest
 let earth = new THREE.Mesh(earthGeometry, earthMaterial);
-
+earth.name = 'Earth'
 // Add the earth to scene
 scene.add( earth );
 
@@ -509,7 +509,7 @@ let earthClouds = new THREE.Mesh(earthCloudGeo, earthMaterialClouds);
 earthClouds.scale.set( 1.015, 1.015, 1.015);
 
 // Make child of the earth
-earth.add( earthClouds ) 
+scene.add( earthClouds ) 
 
 // CREATE variable to store array of lights
 let lights = [];
@@ -528,6 +528,15 @@ function createSkyBox(scene) {
     scene.background = texture;
 };
 
+// background white
+// var starGeometry = new THREE.SphereGeometry(1000, 50, 50);
+// var starMaterial = new THREE.MeshPhongMaterial({
+//   map: new THREE.ImageUtils.loadTexture("../IMAGES/white.jpg"),
+//   side: THREE.DoubleSide,
+//   shininess: 0
+// });
+// var starField = new THREE.Mesh(starGeometry, starMaterial);
+// scene.add(starField);
 // CreateLights is a function which creates the lights and adds them to the scene.
 function createLights(scene){
     lights[0] = new THREE.PointLight("#004d99", .5, 0);
@@ -552,14 +561,72 @@ const moonMaterial = new THREE.MeshPhongMaterial({
   });
 const moon = new THREE.Mesh(moonGeometry, moonMaterial);
 moon.position.set(35,0,0);
-  
+
 scene.add(moon);
 
 var r = 35;
 var theta = 0;
 var dTheta = 2 * Math.PI / 1000;
 
-// 
+const captainInfo = [
+{
+    path: "../IMAGES/captain1.jpg",
+    x: 15,
+    y:  5,
+    z: 5,
+    data: 'Image 1'
+},
+{
+    path: "../IMAGES/captain2.jpg",
+    x: -15,
+    y:  -5,
+    z: 5,
+    data: 'Image 2'
+},
+]
+const createCaptain = (captainInfo) => {
+    let captainGeometry = new THREE.BoxGeometry(0.1, 5, 5);
+    let captainMaterial;
+    captainInfo.map((item, i) => {
+        captainMaterial = new THREE.MeshLambertMaterial({
+            map: THREE.ImageUtils.loadTexture(`${item.path}`)
+        })
+        const captain = new THREE.Mesh(captainGeometry, captainMaterial);
+        captain.userData.data = item.data;
+
+        captain.position.set(item.x, item.y, item.z);
+        earth.add(captain);
+    })
+}
+createCaptain(captainInfo);
+// create captain
+// const captain1Geometry = new THREE.BoxGeometry(0.1, 5, 5);
+// const captain1Material = new THREE.MeshLambertMaterial({
+//     map: THREE.ImageUtils.loadTexture("../IMAGES/captain1.jpg")
+// })
+// const captain1 = new THREE.Mesh(captain1Geometry, captain1Material);
+// captain1.position.set(15, 3,3);
+// scene.add(captain1);
+// // create captain
+// const captain2Geometry = new THREE.BoxGeometry(0.1, 5, 5);
+// const captain2Material = new THREE.MeshLambertMaterial({
+//     map: THREE.ImageUtils.loadTexture("../IMAGES/captain2.jpg")
+// })
+// const captain2 = new THREE.Mesh(captain2Geometry, captain2Material);
+// captain2.position.set(-15, -5,5);
+// scene.add(captain2);
+// // create captain
+// const captain3Geometry = new THREE.BoxGeometry(0.1, 5, 5);
+// const captain3Material = new THREE.MeshLambertMaterial({
+//     map: THREE.ImageUtils.loadTexture("../IMAGES/captain3.jpg")
+// })
+// const captain3 = new THREE.Mesh(captain3Geometry, captain3Material);
+// captain3.position.set(10, 10, 5);
+  
+// scene.add(captain3);
+
+
+//
 function addSceneObjects(scene) {
     createLights(scene);
     createSkyBox(scene);
@@ -582,6 +649,7 @@ controls.saveState();
 // Add event listeners so DOM knows what functions to use when objects/items are interacted with
 window.addEventListener('resize', onWindowResize, false);
 window.addEventListener('click', onWindowClick, false);
+window.addEventListener('mousemove', onWindowMouseover, false);
 //window.addEventListener('touchstart', onTouch, false);
 
 // Used for showing/hiding the instruction box
@@ -604,16 +672,57 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 };
+function onWindowMouseover(event){
+    
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    let intersectsCaptain = raycaster.intersectObjects(earth.children);
+    const html = document.querySelector('html');
 
+    // console.log(intersectsCaptain)
+    if(intersectsCaptain[0]){
+        html.style.cursor = 'pointer';
+    }
+    else{
+        html.style.cursor = 'auto';
+    }
+}
+var x,y,z;
 // Listens for the mouse to intersect object and when clicked returns the data to the inner html
 function onWindowClick(event) {
     event.preventDefault();
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
-
+   
     let intersects = raycaster.intersectObjects(earthClouds.children);
-    console.log(earthClouds.children)
+    
+    let intersectsCaptain = raycaster.intersectObjects(earth.children);
+    if(intersectsCaptain[0]){
+        // console.log(intersectsCaptain[0].object.position.x)
+        x = intersectsCaptain[0].object.position.x;
+        y = intersectsCaptain[0].object.position.y;
+        z = intersectsCaptain[0].object.position.z;
+        if(x > 0){
+                camera.position.x = x + 15
+                camera.position.y = y + 1
+                camera.position.z = z + 1
+            
+            
+        }
+        else{
+            camera.position.x = x - 15
+            camera.position.y = y + 1
+            camera.position.z = z + 1
+            }
+        
+       
+    }
+    else{
+        
+    }
+   
     for (let i = 0; i < intersects.length; i++){
         document.querySelector("#region").innerText = "Region: " + intersects[0].object.userData.region;
         document.getElementById("region").style.color = intersects[0].object.userData.color;
@@ -625,7 +734,7 @@ function onWindowClick(event) {
         document.querySelector("#climate").innerText = "Climate: " + intersects[0].object.userData.climate;
     }
     // const item = intersects[0];
-    console.log(intersects)
+    
     // let point = item.point;
     // let camDistance = camera.position.copy(point).normalize.multiplyScalar(camDistance);
 };
@@ -640,26 +749,40 @@ function animate() {
 const earthVec = new THREE.Vector3(0,0,0);
 
 //Set position increments
-const dx = .01;
-const dy = -.01;
-const dz = -.05;
+const dx = 1;
+const dy = 1;
+const dz = 1;
+
 // Updates camera renderer
 function render() {
-    theta += dTheta;
-    moon.position.x = r * Math.cos(theta);
-    moon.position.z = r * Math.sin(theta);
-        //Update the camera position
-    camera.position.x += dx;
-    camera.position.y += dy;
-    camera.position.z += dz;
-
-    //Flyby reset
+    // if(x && y && z){
+    //     while((Math.abs(Math.round(camera.position.x/x)) !== 1 )){
+    //         camera.position.x = camera.position.x + (camera.position.x/x)*5;
+    //         camera.position.y = camera.position.y + (camera.position.y/y)*5;
+    //         camera.position.z = camera.position.z + (camera.position.z/z)*5;
+    //     }
+    // }
     if (camera.position.z < -100) {
         camera.position.set(0,35,70);
     }
 
     //Point the camera towards the earth
     camera.lookAt(earthVec);
+    theta += dTheta;
+    moon.position.x = r * Math.cos(theta);
+    moon.position.z = r * Math.sin(theta);
+        //Update the camera position
+    // camera.position.x += dx;
+    // camera.position.y += dy;
+    // camera.position.z += dz;
+
+    // //Flyby reset
+    // if (camera.position.z < -100) {
+    //     camera.position.set(0,35,70);
+    // }
+
+    // //Point the camera towards the earth
+    // camera.lookAt(earthVec);
     renderer.render( scene, camera );
     
 };

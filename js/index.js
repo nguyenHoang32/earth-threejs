@@ -492,7 +492,7 @@ scene.add( earth );
 let earthCloudGeo = new THREE.SphereGeometry(10, 50, 50);
 
 // Add cloud texture
-let earthCloudsTexture = new THREE.TextureLoader().load('./IMAGES/earthhiresclouds4K.jpg');
+let earthCloudsTexture = new THREE.TextureLoader().load('IMAGES/earthhiresclouds4K.jpg');
 
 // Add cloud material
 let earthMaterialClouds = new THREE.MeshLambertMaterial({
@@ -518,12 +518,12 @@ let lights = [];
 function createSkyBox(scene) {
     const loader = new THREE.CubeTextureLoader();
     const texture = loader.load([
-        './IMAGES/space_right.png',
-        './IMAGES/space_left.png',
-        './IMAGES/space_top.png',
-        './IMAGES/space_bot.png',
-        './IMAGES/space_front.png',
-        './IMAGES/space_back.png'
+        'IMAGES/space_right.png',
+        'IMAGES/space_left.png',
+        'IMAGES/space_top.png',
+        'IMAGES/space_bot.png',
+        'IMAGES/space_front.png',
+        'IMAGES/space_back.png'
     ])
     scene.background = texture;
 };
@@ -557,7 +557,7 @@ function createLights(scene){
 // Create a moon
 const moonGeometry = new THREE.SphereGeometry(3.5, 50,50);
 const moonMaterial = new THREE.MeshPhongMaterial({
-    map: THREE.ImageUtils.loadTexture("./IMAGES/moon.jpg")
+    map: THREE.ImageUtils.loadTexture("IMAGES/moon.jpg")
   });
 const moon = new THREE.Mesh(moonGeometry, moonMaterial);
 moon.position.set(35,0,0);
@@ -570,14 +570,14 @@ var dTheta = 2 * Math.PI / 1000;
 
 const captainInfo = [
 {
-    path: "./IMAGES/captain1.jpg",
+    path: "IMAGES/captain1.jpg",
     x: 15,
     y:  5,
     z: 5,
     data: 'Image 1'
 },
 {
-    path: "./IMAGES/captain2.jpg",
+    path: "IMAGES/captain2.jpg",
     x: -15,
     y:  -5,
     z: 5,

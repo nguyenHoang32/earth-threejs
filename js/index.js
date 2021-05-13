@@ -471,7 +471,7 @@ let earthBumpMap = new THREE.TextureLoader().load('./IMAGES/earthbump4k.jpg');
 let earthSpecMap = new THREE.TextureLoader().load('./IMAGES/earthspec4k.jpg');
 
 // Geometry is what the shape/size of the globe will be
-let earthGeometry = new THREE.SphereGeometry( 10, 32, 32);
+let earthGeometry = new THREE.SphereGeometry( 10, 50, 50);
 
 // Material is how the globe will look like
 let earthMaterial = new THREE.MeshPhongMaterial({
@@ -489,7 +489,7 @@ let earth = new THREE.Mesh(earthGeometry, earthMaterial);
 scene.add( earth );
 
 // Add clouds to the earth object
-let earthCloudGeo = new THREE.SphereGeometry(10, 32, 32);
+let earthCloudGeo = new THREE.SphereGeometry(10, 50, 50);
 
 // Add cloud texture
 let earthCloudsTexture = new THREE.TextureLoader().load('./IMAGES/earthhiresclouds4K.jpg');
@@ -545,6 +545,21 @@ function createLights(scene){
     scene.add(lights[3]);
 }
 
+// Create a moon
+const moonGeometry = new THREE.SphereGeometry(3.5, 50,50);
+const moonMaterial = new THREE.MeshPhongMaterial({
+    map: THREE.ImageUtils.loadTexture("../IMAGES/moon_texture.jpg")
+  });
+const moon = new THREE.Mesh(moonGeometry, moonMaterial);
+moon.position.set(35,0,0);
+  
+scene.add(moon);
+
+var r = 35;
+var theta = 0;
+var dTheta = 2 * Math.PI / 1000;
+
+// 
 function addSceneObjects(scene) {
     createLights(scene);
     createSkyBox(scene);
@@ -554,7 +569,7 @@ function addSceneObjects(scene) {
 addSceneObjects(scene);
 
 // Change position so we can see the objects
-camera.position.z = 20;
+camera.position.set(0,35,70);
 
 // Disable control function, so users do not zoom too far in or pan away from center
 controls.minDistance = 12;
@@ -618,13 +633,33 @@ function onWindowClick(event) {
 // Allows for the scene to move and be interacted with
 function animate() {
     requestAnimationFrame( animate );
-    
 	controls.update();
     render();
 };
+// simulations earth and moon
+const earthVec = new THREE.Vector3(0,0,0);
 
+//Set position increments
+const dx = .01;
+const dy = -.01;
+const dz = -.05;
 // Updates camera renderer
 function render() {
+    theta += dTheta;
+    moon.position.x = r * Math.cos(theta);
+    moon.position.z = r * Math.sin(theta);
+        //Update the camera position
+    camera.position.x += dx;
+    camera.position.y += dy;
+    camera.position.z += dz;
+
+    //Flyby reset
+    if (camera.position.z < -100) {
+        camera.position.set(0,35,70);
+    }
+
+    //Point the camera towards the earth
+    camera.lookAt(earthVec);
     renderer.render( scene, camera );
     
 };

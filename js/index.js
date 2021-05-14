@@ -435,7 +435,6 @@ let data = [
       "Climate":"2"
   }
 ];
-const zo = 1;
 
 // THREEJS CODE
 

@@ -446,8 +446,12 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
 
 // CREATE renderer to display the created objects (kind of like the people who place the diferent sets on the stage)
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({
+    antialias: true
+});
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(new THREE.Color(0x595959));
+document.body.appendChild(renderer.domElement);
 document.body.appendChild(renderer.domElement);
 
 // CREATE controls so that we can interact with the objects/have interactivity
@@ -584,7 +588,10 @@ const captainInfo = [
     data: 'Image 2'
 },
 ]
+var tooltipEnabledObjects = [];
+
 const createCaptain = (captainInfo) => {
+    
     let captainGeometry = new THREE.BoxGeometry(0.1, 5, 5);
     let captainMaterial;
     captainInfo.map((item, i) => {
@@ -593,12 +600,88 @@ const createCaptain = (captainInfo) => {
         })
         const captain = new THREE.Mesh(captainGeometry, captainMaterial);
         captain.userData.data = item.data;
-
         captain.position.set(item.x, item.y, item.z);
         earth.add(captain);
+        tooltipEnabledObjects.push(captain)
     })
 }
 createCaptain(captainInfo);
+
+var latestMouseProjection; // this is the latest projection of the mouse on object (i.e. intersection with ray)
+var hoveredObj; // this objects is hovered at the moment
+var tooltipDisplayTimeout;
+
+function showTooltip() {
+    var divElement = document.getElementById('tooltip');
+
+    if (divElement && latestMouseProjection) {
+        divElement.style.display = 'block';
+        divElement.style.opacity = '0';
+
+        var canvasHalfWidth = renderer.domElement.offsetWidth / 2;
+        var canvasHalfHeight = renderer.domElement.offsetHeight / 2;
+
+        var tooltipPosition = latestMouseProjection.clone().project(camera);
+        tooltipPosition.x = (tooltipPosition.x * canvasHalfWidth) + canvasHalfWidth + renderer.domElement.offsetLeft;
+        tooltipPosition.y = -(tooltipPosition.y * canvasHalfHeight) + canvasHalfHeight + renderer.domElement.offsetTop;
+        var tootipWidth = divElement.offsetWidth;
+        var tootipHeight = divElement.offsetHeight;
+        divElement.style.left = `${tooltipPosition.x - tootipWidth/2}px`;
+        divElement.style.top = `${tooltipPosition.y - tootipHeight - 5}px`
+
+        // var position = new THREE.Vector3();
+        // var quaternion = new THREE.Quaternion();
+        // var scale = new THREE.Vector3();
+        // hoveredObj.matrix.decompose(position, quaternion, scale);
+        divElement.innerHTML = hoveredObj.userData.data;
+
+        setTimeout(function() {
+            divElement.style.opacity = 1
+        }, 25);
+    }
+}
+function hideTooltip() {
+    var divElement = document.getElementById('tooltip')
+    if (divElement) {
+        divElement.style.display = 'none';
+    }
+}
+
+function updateMouseCoords(event, coordsObj) {
+    coordsObj.x = ((event.clientX - renderer.domElement.offsetLeft + 0.5) / window.innerWidth) * 2 - 1;
+    coordsObj.y = -((event.clientY - renderer.domElement.offsetTop + 0.5) / window.innerHeight) * 2 + 1;
+}
+function handleManipulationUpdate() {
+    raycaster.setFromCamera(mouse, camera); {
+        var intersects = raycaster.intersectObjects(tooltipEnabledObjects);
+        if (intersects.length > 0) {
+            latestMouseProjection = intersects[0].point;
+            hoveredObj = intersects[0].object;
+        }
+    }
+
+    if (tooltipDisplayTimeout || !latestMouseProjection) {
+        clearTimeout(tooltipDisplayTimeout);
+        tooltipDisplayTimeout = undefined;
+        hideTooltip();
+    }
+
+    if (!tooltipDisplayTimeout && latestMouseProjection) {
+        tooltipDisplayTimeout = setTimeout(function() {
+            tooltipDisplayTimeout = undefined;
+            showTooltip();
+        }, 330);
+    }
+}
+function onMouseMove(event) {
+    updateMouseCoords(event, mouse);
+
+    latestMouseProjection = undefined;
+    hoveredObj = undefined;
+    handleManipulationUpdate();
+}
+
+window.addEventListener('mousemove', onMouseMove, false);
 // create captain
 // const captain1Geometry = new THREE.BoxGeometry(0.1, 5, 5);
 // const captain1Material = new THREE.MeshLambertMaterial({
@@ -679,7 +762,11 @@ function onWindowMouseover(event){
     raycaster.setFromCamera(mouse, camera);
     let intersectsCaptain = raycaster.intersectObjects(earth.children);
     const html = document.querySelector('html');
+    updateMouseCoords(event, mouse);
 
+    latestMouseProjection = undefined;
+    hoveredObj = undefined;
+    handleManipulationUpdate();
     // console.log(intersectsCaptain)
     if(intersectsCaptain[0]){
         html.style.cursor = 'pointer';
@@ -739,6 +826,9 @@ function onWindowClick(event) {
     // let camDistance = camera.position.copy(point).normalize.multiplyScalar(camDistance);
 };
 
+
+
+
 // Allows for the scene to move and be interacted with
 function animate() {
     requestAnimationFrame( animate );
@@ -747,6 +837,12 @@ function animate() {
 };
 // simulations earth and moon
 const earthVec = new THREE.Vector3(0,0,0);
+
+
+
+
+
+
 
 //Set position increments
 const dx = 1;

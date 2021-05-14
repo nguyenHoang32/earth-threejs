@@ -443,8 +443,8 @@ let data = [
 const scene = new THREE.Scene();
 
 // CREATE camera to see objects (kind of like sitting in the audience)
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-
+const camera = new THREE.PerspectiveCamera(85, window.innerWidth/window.innerHeight, 0.1, 1000);
+camera.position.z = 70;
 // CREATE renderer to display the created objects (kind of like the people who place the diferent sets on the stage)
 const renderer = new THREE.WebGLRenderer({
     antialias: true
@@ -673,15 +673,7 @@ function handleManipulationUpdate() {
         }, 330);
     }
 }
-function onMouseMove(event) {
-    updateMouseCoords(event, mouse);
 
-    latestMouseProjection = undefined;
-    hoveredObj = undefined;
-    handleManipulationUpdate();
-}
-
-window.addEventListener('mousemove', onMouseMove, false);
 // create captain
 // const captain1Geometry = new THREE.BoxGeometry(0.1, 5, 5);
 // const captain1Material = new THREE.MeshLambertMaterial({
@@ -784,7 +776,11 @@ function onWindowClick(event) {
     raycaster.setFromCamera(mouse, camera);
    
     let intersects = raycaster.intersectObjects(earthClouds.children);
-    
+    updateMouseCoords(event, mouse);
+
+    latestMouseProjection = undefined;
+    hoveredObj = undefined;
+    handleManipulationUpdate();
     let intersectsCaptain = raycaster.intersectObjects(earth.children);
     if(intersectsCaptain[0]){
         // console.log(intersectsCaptain[0].object.position.x)
@@ -803,7 +799,17 @@ function onWindowClick(event) {
             camera.position.y = y + 1
             camera.position.z = z + 1
             }
-        
+        // console.log('camera')
+        // new TWEEN.Tween( camera.position ).to( {
+        //     x: intersectsCaptain[0].object.position.x,
+        //     y: intersectsCaptain[0].object.position.y,
+        //     z: intersectsCaptain[0].object.position.z}, 600 )
+        //   .easing( TWEEN.Easing.Sinusoidal.EaseInOut).start();
+        // new TWEEN.Tween( controls.target ).to( {
+        //     x: intersectsCaptain[0].object.position.x,
+        //     y: intersectsCaptain[0].object.position.y,
+        //     z: intersectsCaptain[0].object.position.z}, 600 )
+        //   .easing( TWEEN.Easing.Sinusoidal.EaseInOut).start();
        
     }
     else{

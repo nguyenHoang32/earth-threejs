@@ -670,7 +670,7 @@ function handleManipulationUpdate() {
         tooltipDisplayTimeout = setTimeout(function() {
             tooltipDisplayTimeout = undefined;
             showTooltip();
-        }, 330);
+        }, 220);
     }
 }
 

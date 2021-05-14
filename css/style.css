@@ -311,4 +311,5 @@
    transition: opacity 0.25s linear;
    border-radius: 3px;
    color: red;
+   font-size: 18px;
  }
